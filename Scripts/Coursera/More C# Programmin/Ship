@@ -1,0 +1,104 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Ship : MonoBehaviour
+{
+    [SerializeField]
+    private float thrustForce = 10f;
+    public const float RotateDegreesPerSecond = 5f;
+    private bool isThrusting = false;
+
+
+    private Vector2 thrustPosition = new Vector2(1, 0);
+    private Vector2 force = new Vector2(0, 0);
+
+    private Vector3 direction = new Vector3(0, 0, 0);
+
+    private Rigidbody2D rb;
+    private CircleCollider2D shipCollider;
+
+    
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        shipCollider = GetComponent<CircleCollider2D>();
+
+        float colliderRadius = shipCollider.radius;
+
+        direction = transform.eulerAngles;
+    }
+
+    void FixedUpdate()
+    {
+        moveShip();
+        changeDirection();
+
+    }
+    //void moveShip()
+    //{
+    //    if (Input.GetAxis("Thrust") > 0 && isThrusting == false)
+    //    {
+    //        Vector2 force = thrustPosition * thrustForce;
+
+    //        direction = 
+
+    //        rb.AddForce(force, ForceMode2D.Impulse);
+    //        isThrusting = true;
+
+    //        Debug.Log("Space");
+    //    }
+
+    //    if (Input.GetAxis("Thrust") == 0 && isThrusting == true)
+    //    {
+    //        isThrusting = false;
+    //    }
+    //}
+
+    void moveShip()
+    {
+        if (Input.GetAxis("Thrust") > 0 && !isThrusting)
+        {
+            // Get the current rotation of the player in degrees
+            float playerRotation = transform.eulerAngles.z;
+
+            // Convert rotation to radians
+            float playerRotationRadians = playerRotation * Mathf.Deg2Rad;
+
+            // Calculate the force direction based on rotation
+            Vector2 forceDirection = new Vector2(Mathf.Cos(playerRotationRadians), Mathf.Sin(playerRotationRadians));
+
+            // Apply thrust force in the direction the player is facing
+            rb.AddForce(forceDirection * thrustForce, ForceMode2D.Impulse);
+
+            isThrusting = true;
+        }
+
+        if (Input.GetAxis("Thrust") == 0)
+        {
+            isThrusting = false;
+        }
+    }
+
+
+    void changeDirection()
+    {
+        if(Input.GetAxis("ChangeDirection") > 0)
+        {
+            transform.Rotate(0, 0, 2.5f);
+            
+        } 
+        
+        if(Input.GetAxis("ChangeDirection") < 0)
+        {
+            transform.Rotate(0, 0, -2.5f);
+        }
+    }
+
+    private void OnBecameInvisible()
+    {
+        transform.position = new Vector2(-10.8f,0f);
+    }
+}
